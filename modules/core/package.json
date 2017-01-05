@@ -1,0 +1,17 @@
+{
+  "name": "react-native-mars-core",
+  "version": "1.0.0",
+  "description": "mars core",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mars",
+    "core",
+    "react",
+    "native"
+  ],
+  "author": "",
+  "license": "ISC"
+}
