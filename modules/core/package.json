@@ -12,6 +12,14 @@
     "react",
     "native"
   ],
+
+  "files": [
+    "android",
+    "ios",
+    "*.js",
+    "README.md"
+  ],
+
   "author": "",
   "license": "ISC"
 }

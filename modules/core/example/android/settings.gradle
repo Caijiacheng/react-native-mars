@@ -1,0 +1,6 @@
+rootProject.name = 'example'
+
+include ':app'
+include ':react-native-mars-core'
+//project(':react-native-mars-core').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-mars-core/android')
+project(':react-native-mars-core').projectDir = new File(rootProject.projectDir, '../../android')
