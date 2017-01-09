@@ -1,7 +1,6 @@
 package com.github.creative.mars;
 
 import android.content.Context;
-import android.os.RemoteException;
 
 import com.github.creative.mars.tasks.MarsTaskProperty;
 import com.github.creative.mars.tasks.MarsTaskWrapper;
@@ -61,7 +60,7 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
     }
 
 
-    public void send(MarsTaskWrapper taskWrapper) throws Exception {
+    public void send(MarsTaskWrapper taskWrapper) {
         final StnLogic.Task task = new StnLogic.Task(StnLogic.Task.EShort, 0, "", null);
 
         // Set host & cgi path
@@ -84,7 +83,9 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
 
         } else {
             Log.e(TAG, "invalid channel strategy");
-            throw new Exception("Invalid Channel Strategy");
+//            throw new Exception("Invalid Channel Strategy");
+            taskWrapper.onTaskError(new Exception("Invalid Channel Strategy"));
+            return;
         }
 
         // Set cmdID if necessary
@@ -104,13 +105,15 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
 
         } else {
             Log.e(TAG, "stn task start failed with id %d", task.taskID);
-            throw new Exception("stn task start failed with id " + task.taskID);
+//            throw new Exception("stn task start failed with id " + task.taskID);
+            taskWrapper.onTaskError(new Exception("stn task start failed with id " + task.taskID));
+            return;
         }
 
     }
 
 
-    public void cancel(MarsTaskWrapper taskWrapper) throws RemoteException {
+    public void cancel(MarsTaskWrapper taskWrapper)  {
         if (taskWrapper == null) {
             Log.e(TAG, "cannot cancel null wrapper");
             return;
@@ -180,10 +183,15 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
     @Override
     public void onPush(int cmdid, byte[] data) {
 
+        Log.d(TAG, "onPush => %d, data => %s", cmdid, MemoryDump.dumpHex(data));
+
     }
 
     @Override
     public boolean req2Buf(int taskID, Object userContext, ByteArrayOutputStream reqBuffer, int[] errCode, int channelSelect) {
+
+
+        Log.d(TAG, "req2Buf taskID -> %d", taskID);
 
         final MarsTaskWrapper taskWrapper = mapID2Task.get(taskID);
         if (taskWrapper == null) {
@@ -257,7 +265,7 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
 
     @Override
     public int getLongLinkIdentifyCheckBuffer(ByteArrayOutputStream identifyReqBuf, ByteArrayOutputStream hashCodeBuffer, int[] reqRespCmdID) {
-        return 0;
+        return StnLogic.ECHECK_NEVER;
     }
 
     @Override

@@ -11,10 +11,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class MarsCorePackage implements ReactPackage {
-//    private Activity mCurrentActivity;
 
     public MarsCorePackage() {
-//        mCurrentActivity = activity;
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.nio.charset.Charset;
  * Created by caijiacheng on 06/01/2017.
  */
 
-public class TextMarsTaskWrapper extends MarsTaskWrapper{
+abstract  public class TextMarsTaskWrapper extends MarsTaskWrapper{
 
 
     protected  String request;
@@ -28,25 +28,7 @@ public class TextMarsTaskWrapper extends MarsTaskWrapper{
         return request;
     }
 
-    @Override
-    public void onTaskSend() {
 
-    }
-
-    @Override
-    public void onTaskEnd() {
-
-    }
-
-    @Override
-    public void onTaskCancel() {
-
-    }
-
-    @Override
-    public void onTaskResponse() {
-
-    }
 
     @Override
     public byte[] marshal() {
