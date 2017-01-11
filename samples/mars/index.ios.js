@@ -12,8 +12,38 @@ import {
   View
 } from 'react-native';
 
+var main_pb = require('./js/proto/main_pb');
+
+
 export default class mars extends Component {
+
+
+  testProto()
+  {
+      //
+      
+      var request = new main_pb.HelloRequest();
+      request.setUser("rn_user")
+      request.setText("rn_content")
+
+      console.info("res => ", request)
+
+      var bytes = request.serializeBinary();
+
+      console.info("bytes => ", bytes)
+      
+      var res = main_pb.HelloRequest.deserializeBinary(bytes)
+
+      console.info("res => ", res)
+
+      
+
+  }  
+
   render() {
+
+    this.testProto();
+
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>

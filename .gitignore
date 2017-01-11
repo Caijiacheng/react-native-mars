@@ -3,3 +3,5 @@ build
 
 gradle-wrapper.jar
 *.iml
+
+samples/mars/js/proto
