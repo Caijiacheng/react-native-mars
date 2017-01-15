@@ -42,6 +42,16 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
     private Map<Integer, MarsTaskWrapper> mapID2Task = new ConcurrentHashMap<>();
     private Map<MarsTaskWrapper, Integer> mapTask2ID = new ConcurrentHashMap<>();
 
+    public interface  onPushListener {
+        void onRecvPush(int cmdid, byte[] data);
+    }
+
+    private onPushListener onPushHandle = null;
+
+    public void setOnPushListener(onPushListener handle) {
+        onPushHandle = handle;
+    }
+
 
     public void setAppLogicAccountInfo(AppLogic.AccountInfo accountInfo) {
         this.accountInfo = accountInfo;
@@ -58,6 +68,10 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
     public void setAppFilePath(String appFilePath) {
         this.appFilePath = appFilePath;
     }
+
+
+
+
 
 
     public void send(MarsTaskWrapper taskWrapper) {
@@ -184,7 +198,14 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
     public void onPush(int cmdid, byte[] data) {
 
         Log.d(TAG, "onPush => %d, data => %s", cmdid, MemoryDump.dumpHex(data));
+        if (onPushHandle != null) {
+            try {
+                onPushHandle.onRecvPush(cmdid, data);
+            }catch (Throwable e) {
+                e.printStackTrace();//skip
+            }
 
+        }
     }
 
     @Override
@@ -245,7 +266,7 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
         }
 
         try {
-            wrapper.onTaskEnd();
+            wrapper.onTaskEnd(errType, errCode);
         } finally {
             mapTask2ID.remove(wrapper); // onTaskEnd will be called only once for each task
         }

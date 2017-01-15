@@ -1,4 +1,4 @@
-package com.example;
+package com.example.mars;
 
 import com.facebook.react.ReactActivity;
 
@@ -13,3 +13,4 @@ public class MainActivity extends ReactActivity {
         return "example";
     }
 }
+0000

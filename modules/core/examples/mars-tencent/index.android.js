@@ -12,7 +12,11 @@ import {
   View
 } from 'react-native';
 
+var MarsCore = require('react-native-mars-core');
+
 export default class example extends Component {
+
+
   render() {
     return (
       <View style={styles.container}>

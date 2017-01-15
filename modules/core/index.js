@@ -9,44 +9,47 @@ const MarsCoreModule = NativeModules.MarsCoreModule;
 
 const emitter = (Platform.OS === 'android' ? DeviceEventEmitter : NativeAppEventEmitter)
 
-const uploadFile = (
-  token: string,
-  filePath: string,
+DeviceEventEmitter.addListener('networkStatusDidChange', (resp) => {
+    MarsCoreModule.notifyNetworkChange();
+});
+
+const init = (
+  shortLinkPort,
+  longLinkHost,
+  longLinkPorts,
+  clientVersion,
 ) => {
-  if (!QiNiuBridge) {
-    console.error('QiNiuBridge 原生部分未加载');
-    throw new Error('上传组件加载失败')
+  const sport = shortLinkPort && 80;
+  const lhost = longLinkHost && 'localhost';
+  const lports = longLinkPorts && [90];
+  const cversion = clientVersion && '1.0.0'
+
+  const profile = {
+    'longLinkHost' : lhost, 
+    'shortLinkPort' : sport,
+    'longLinkPorts' : lports,
+    'clientVersion' : cversion
   }
-
-  let funcObj = {};
-  let promise = _upload(token, filePath, funcObj);
-
-  promise.progress = (fn) => {
-    funcObj.onProgress = fn;
-    return promise;
-  }
-
-  return promise;
+  MarsCoreModule.init(profile);
 }
 
-const _upload = async(token: string, filePath: string, funcObj: Object): any => {
-  // on progress event listener
-  let key = 'UploadProgress-'+filePath;
-  let subscription = emitter.addListener(key, (body) => {
-    if(funcObj.onProgress) {
-      funcObj.onProgress(body.percent);
-    }
-  })
-  try{
-    let response = await QiNiuBridge.uploadFile(token, filePath);
-    subscription.remove();
-    return response;
-  }catch(err){
-      subscription.remove();
-      throw err;
+const post = (host, cgi, data, cmdid, short_support, long_support) => {
+
+  const s_support = short_support && true;
+  const l_support = long_support && false;
+  const c_cmdid = cmdid && -1;
+
+  const properties = {
+    'host' : host,
+    'cgi_path': cgi,
+    'cmd_id': c_cmdid,
+    'short_support' : s_support, 
+    'long_support' : l_support
   }
+  return MarsCoreModule.send(data, properties)
 }
 
 module.exports = {
-  uploadFile,
+  init,
+  post,
 }

@@ -29,10 +29,9 @@ abstract  public class TextMarsTaskWrapper extends MarsTaskWrapper{
     }
 
 
-
     @Override
     public byte[] marshal() {
-        return request.toString().getBytes(Charset.forName("UTF-8"));
+        return request.getBytes(Charset.forName("UTF-8"));
     }
 
     @Override

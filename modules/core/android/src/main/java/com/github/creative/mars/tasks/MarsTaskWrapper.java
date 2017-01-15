@@ -57,7 +57,7 @@ abstract  public class MarsTaskWrapper implements IMarshal{
     public abstract Object getRequest();
 
     public abstract void onTaskSend();
-    public abstract void onTaskEnd();
+    public abstract void onTaskEnd(int errType, int errCode);
     public abstract void onTaskCancel();
     public abstract void onTaskResponse();
     public abstract void onTaskError(Throwable e);

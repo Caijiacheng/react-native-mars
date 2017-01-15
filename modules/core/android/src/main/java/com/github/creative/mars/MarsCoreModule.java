@@ -3,6 +3,7 @@ package com.github.creative.mars;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -12,6 +13,8 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.github.creative.mars.tasks.MarsTaskProperty;
 import com.github.creative.mars.tasks.TextMarsTaskWrapper;
 import com.tencent.mars.BaseEvent;
@@ -19,30 +22,35 @@ import com.tencent.mars.Mars;
 import com.tencent.mars.app.AppLogic;
 import com.tencent.mars.sdt.SdtLogic;
 import com.tencent.mars.stn.StnLogic;
-import com.tencent.mars.xlog.Log;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public class MarsCoreModule extends ReactContextBaseJavaModule {
+public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCoreStub.onPushListener {
 
     MarsCoreStub stub = null;
 
 
     final static String TAG = MarsCoreModule.class.getName();
-
+    private DeviceEventManagerModule.RCTDeviceEventEmitter mEventEmitter;
 
     public MarsCoreModule(ReactApplicationContext reactContext) {
         super(reactContext);
+    }
+
+
+    @Override
+    public void initialize() {
+
+        mEventEmitter = getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
 
         LifecycleEventListener listener = new LifecycleEventListener() {
             @Override
             public void onHostResume() {
-
                 setForeground(true);
-
             }
 
             @Override
@@ -57,8 +65,32 @@ public class MarsCoreModule extends ReactContextBaseJavaModule {
 
             }
         };
-        reactContext.addLifecycleEventListener(listener);
+        getReactApplicationContext().addLifecycleEventListener(listener);
 
+    }
+
+    @Override
+    public void onRecvPush(int cmdid, byte[] data) {
+        WritableMap json = Arguments.createMap();
+        json.putInt("cmdid", cmdid);
+        json.putString("data", new String(data, Charset.forName("UTF-8")));
+        mEventEmitter.emit(Events.EVENT_ON_PUSH.toString(), json);
+    }
+
+
+    public enum Events {
+        EVENT_ON_PUSH("onMarsPush");
+
+        private final String mName;
+
+        Events(final String name) {
+            mName = name;
+        }
+
+        @Override
+        public String toString() {
+            return mName;
+        }
     }
 
     @Nullable
@@ -97,7 +129,7 @@ public class MarsCoreModule extends ReactContextBaseJavaModule {
         BaseEvent.onForeground(true);
 
         StnLogic.makesureLongLinkConnected();
-
+        stub.setOnPushListener(this);
     }
 
 
@@ -108,7 +140,6 @@ public class MarsCoreModule extends ReactContextBaseJavaModule {
         }
     }
 
-
     @ReactMethod
     public void send(final String data, final ReadableMap properties, final Promise promise) {
         TextMarsTaskWrapper taskWrapper = new TextMarsTaskWrapper(data) {
@@ -118,8 +149,10 @@ public class MarsCoreModule extends ReactContextBaseJavaModule {
             }
 
             @Override
-            public void onTaskEnd() {
-                Log.e(TAG, String.format("onEnd : data => %s, properties => %s", data, properties.toString()));
+            public void onTaskEnd(int errType, int errCode) {
+                Log.e(TAG, String.format("onEnd : data => %s, properties => %s. errType => %d, errCode => %d",
+                        data, properties.toString(), errType, errCode));
+                promise.reject("-1", new Exception("taskError"));
             }
 
             @Override
@@ -139,6 +172,7 @@ public class MarsCoreModule extends ReactContextBaseJavaModule {
                 promise.reject("-1", e);
             }
         };
+
 
         Bundle taskProp = Arguments.toBundle(properties);
         taskWrapper.setHttpRequest(taskProp.getString(MarsTaskProperty.OPTIONS_HOST, ""),
@@ -171,7 +205,7 @@ public class MarsCoreModule extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "MarsCore";
+        return "MarsCoreModule";
     }
 
 

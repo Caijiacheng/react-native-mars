@@ -1,4 +1,4 @@
-package com.example;
+package com.example.mars;
 
 import android.app.Application;
 

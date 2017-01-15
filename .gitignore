@@ -5,3 +5,11 @@ gradle-wrapper.jar
 *.iml
 
 samples/mars/js/proto
+
+chat_pb.js
+
+main_pb.js
+
+messagepush_pb.js
+
+topic_pb.js
