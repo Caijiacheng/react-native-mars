@@ -13,10 +13,11 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.github.creative.mars.tasks.ByteArrayTaskWrapper;
 import com.github.creative.mars.tasks.MarsTaskProperty;
-import com.github.creative.mars.tasks.TextMarsTaskWrapper;
 import com.tencent.mars.BaseEvent;
 import com.tencent.mars.Mars;
 import com.tencent.mars.app.AppLogic;
@@ -108,6 +109,8 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
             return;
         }
 
+//        System.loadLibrary("stlport_shared");
+
         stub = new MarsCoreStub(getReactApplicationContext());
 
         AppLogic.setCallBack(stub);
@@ -130,6 +133,9 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
 
         StnLogic.makesureLongLinkConnected();
         stub.setOnPushListener(this);
+
+        Log.e(TAG, "MarsCoreModule init ok. longHost => " + profile.getString("longLinkHost"));
+        Log.e(TAG, "shortLinkPort " + profile.getInt("shortLinkPort") + " longLinkPort: " + ports[0]);
     }
 
 
@@ -140,36 +146,63 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
         }
     }
 
+
+    static public byte[] toByteArray(ReadableArray data) {
+
+        byte[] bytes = new byte[data.size()];
+
+        for (int i = 0 ; i < data.size(); i ++ ) {
+            bytes[i] = (byte) data.getInt(i);
+        }
+        return bytes;
+    }
+
+    static public ReadableArray toReadableArray(byte[] bytes) {
+        WritableArray array = Arguments.createArray();
+        for (int i = 0; i < bytes.length; i++) {
+            array.pushInt(bytes[i]);
+        }
+        return array;
+    }
+
+
     @ReactMethod
-    public void send(final String data, final ReadableMap properties, final Promise promise) {
-        TextMarsTaskWrapper taskWrapper = new TextMarsTaskWrapper(data) {
+    public void send(final ReadableArray data, final ReadableMap properties, final Promise promise) {
+
+
+
+        ByteArrayTaskWrapper taskWrapper = new ByteArrayTaskWrapper(toByteArray(data)) {
             @Override
             public void onTaskSend() {
-                Log.e(TAG, String.format("onSend : data => %s, properties => %s", data, properties.toString()));
+                Log.e(TAG, String.format("onSend : data => %s, properties => %s",
+                        MemoryDump.dumpHex(toByteArray(data)), properties.toString()));
             }
 
             @Override
             public void onTaskEnd(int errType, int errCode) {
                 Log.e(TAG, String.format("onEnd : data => %s, properties => %s. errType => %d, errCode => %d",
                         data, properties.toString(), errType, errCode));
-                promise.reject("-1", new Exception("taskError"));
+                if (errType != 0 || errCode != 0 )
+                {
+                    promise.reject("-1", new Exception("Task Error: errType: " + errType + " errCode: " + errCode));
+                }
             }
 
             @Override
             public void onTaskCancel() {
-                Log.e(TAG, String.format("onTaskCancel : data => %s, properties => %s", data, properties.toString()));
+                Log.e(TAG, String.format("onTaskCancel : data => %s, properties => %s",
+                        MemoryDump.dumpHex(toByteArray(data)),
+                        properties.toString()));
                 promise.reject("-1", new Exception("taskCancel"));
             }
 
             @Override
             public void onTaskResponse() {
-                Log.e(TAG, String.format("onTaskCancel : data => %s, properties => %s, response => %s", data, properties.toString(), getResponse().toString()));
-                promise.resolve(getResponse());
-            }
 
-            @Override
-            public void onTaskError(Throwable e) {
-                promise.reject("-1", e);
+                byte[] response = (byte[]) getResponse();
+                Log.e(TAG, String.format("onTaskResponse : data => %s, properties => %s, response => %s", MemoryDump.dumpHex(toByteArray(data)), properties.toString(),
+                        MemoryDump.dumpHex(response)));
+                promise.resolve(toReadableArray(response));
             }
         };
 

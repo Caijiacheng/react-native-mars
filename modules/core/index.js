@@ -8,9 +8,16 @@ import { NativeModules, NativeAppEventEmitter, DeviceEventEmitter, Platform } fr
 const MarsCoreModule = NativeModules.MarsCoreModule;
 
 const emitter = (Platform.OS === 'android' ? DeviceEventEmitter : NativeAppEventEmitter)
+let cb_onpush = null;
 
 DeviceEventEmitter.addListener('networkStatusDidChange', (resp) => {
     MarsCoreModule.notifyNetworkChange();
+});
+
+DeviceEventEmitter.addListener('onMarsPush', (resp) => {
+    if (cb_onpush) {
+      cb_onpush(resp)
+    }
 });
 
 const init = (
@@ -19,10 +26,10 @@ const init = (
   longLinkPorts,
   clientVersion,
 ) => {
-  const sport = shortLinkPort && 80;
-  const lhost = longLinkHost && 'localhost';
-  const lports = longLinkPorts && [90];
-  const cversion = clientVersion && '1.0.0'
+  const sport = shortLinkPort || 8080;
+  const lhost = longLinkHost || 'marsopen.cn';
+  const lports = longLinkPorts || [8081];
+  const cversion = clientVersion || 1
 
   const profile = {
     'longLinkHost' : lhost, 
@@ -33,12 +40,11 @@ const init = (
   MarsCoreModule.init(profile);
 }
 
-const post = (host, cgi, data, cmdid, short_support, long_support) => {
+const post = (host, cgi, data, short_support, long_support, cmdid) => {
 
-  const s_support = short_support && true;
-  const l_support = long_support && false;
+  const s_support = short_support == undefined ? true : short_support;
+  const l_support = long_support == undefined ? false : long_support;
   const c_cmdid = cmdid && -1;
-
   const properties = {
     'host' : host,
     'cgi_path': cgi,
@@ -46,10 +52,15 @@ const post = (host, cgi, data, cmdid, short_support, long_support) => {
     'short_support' : s_support, 
     'long_support' : l_support
   }
-  return MarsCoreModule.send(data, properties)
+  return MarsCoreModule.send([... data], properties)
+}
+
+const setOnPushListener = (listener) => {
+    cb_onpush = listener;
 }
 
 module.exports = {
   init,
   post,
+  setOnPushListener,
 }

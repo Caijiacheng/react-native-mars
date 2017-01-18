@@ -13,4 +13,3 @@ public class MainActivity extends ReactActivity {
         return "example";
     }
 }
-0000

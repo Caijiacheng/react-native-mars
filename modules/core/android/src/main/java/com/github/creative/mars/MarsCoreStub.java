@@ -1,13 +1,13 @@
 package com.github.creative.mars;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.github.creative.mars.tasks.MarsTaskProperty;
 import com.github.creative.mars.tasks.MarsTaskWrapper;
 import com.tencent.mars.app.AppLogic;
 import com.tencent.mars.sdt.SdtLogic;
 import com.tencent.mars.stn.StnLogic;
-import com.tencent.mars.xlog.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -22,6 +22,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, SdtLogic.ICallBack {
 
+
+
+    public final  static int ERR_INVALID_CHANNEL = -1001;
+    public final  static int ERR_START_TASK_FAILED = -1002;
 
     private static final String TAG = MarsCoreStub.class.getName();
 
@@ -72,8 +76,6 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
 
 
 
-
-
     public void send(MarsTaskWrapper taskWrapper) {
         final StnLogic.Task task = new StnLogic.Task(StnLogic.Task.EShort, 0, "", null);
 
@@ -82,6 +84,9 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
         final String cgiPath = taskWrapper.getProperties().getString(MarsTaskProperty.OPTIONS_CGI_PATH);
         task.shortLinkHostList = new ArrayList<>();
         task.shortLinkHostList.add(host);
+
+
+
         task.cgi = cgiPath;
 
         final boolean shortSupport = taskWrapper.getProperties().getBoolean(MarsTaskProperty.OPTIONS_CHANNEL_SHORT_SUPPORT, true);
@@ -97,11 +102,13 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
 
         } else {
             Log.e(TAG, "invalid channel strategy");
-//            throw new Exception("Invalid Channel Strategy");
-            taskWrapper.onTaskError(new Exception("Invalid Channel Strategy"));
+            taskWrapper.onTaskEnd(StnLogic.ectLocal, ERR_INVALID_CHANNEL);
             return;
         }
-
+        Log.e(TAG, String.format("Task: shortLinkHostList: host => %s, cgi => %s, shortsupport => %s, longsupport => %s",
+                host, cgiPath,
+                shortSupport ? "true" : "false",
+                longSupport ? "true": "false"));
         // Set cmdID if necessary
         int cmdID = taskWrapper.getProperties().getInt(MarsTaskProperty.OPTIONS_CMD_ID, -1);
         if (cmdID != -1) {
@@ -112,16 +119,11 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
         mapTask2ID.put(taskWrapper, task.taskID);
 
         // Send
-        Log.i(TAG, "now start task with id %d", task.taskID);
+        Log.e(TAG, "now start task with id " +  task.taskID);
         StnLogic.startTask(task);
-        if (StnLogic.hasTask(task.taskID)) {
-            Log.i(TAG, "stn task started with id %d", task.taskID);
-
-        } else {
-            Log.e(TAG, "stn task start failed with id %d", task.taskID);
-//            throw new Exception("stn task start failed with id " + task.taskID);
-            taskWrapper.onTaskError(new Exception("stn task start failed with id " + task.taskID));
-            return;
+        if (!StnLogic.hasTask(task.taskID)) {
+            //Log.e(TAG, "stn task started with id " + task.taskID);
+            Log.e(TAG, "stn task start failed with id " + task.taskID);
         }
 
     }
@@ -135,10 +137,10 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
 
         final Integer taskID = mapTask2ID.remove(taskWrapper);
         if (taskID == null) {
-            Log.w(TAG, "cancel null taskID wrapper");
+            Log.i(TAG, "cancel null taskID wrapper");
 
         } else {
-            Log.d(TAG, "cancel wrapper with taskID=%d using stn stop", taskID);
+            Log.i(TAG, "cancel wrapper with taskID=%d using stn stop" + taskID);
             StnLogic.stopTask(taskID);
             taskWrapper.onTaskCancel();
             mapID2Task.remove(taskID); // TODO: check return
@@ -181,12 +183,12 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
 
     @Override
     public void reportSignalDetectResults(String resultsJson) {
-
+        Log.e(TAG, "reportSignalDetectResults: resultsJson => " + resultsJson );
     }
 
     @Override
     public boolean makesureAuthed() {
-        return false;
+        return true;
     }
 
     @Override
@@ -197,7 +199,7 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
     @Override
     public void onPush(int cmdid, byte[] data) {
 
-        Log.d(TAG, "onPush => %d, data => %s", cmdid, MemoryDump.dumpHex(data));
+        Log.e(TAG, String.format("onPush => %d, data => %s", cmdid, MemoryDump.dumpHex(data)));
         if (onPushHandle != null) {
             try {
                 onPushHandle.onRecvPush(cmdid, data);
@@ -212,11 +214,11 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
     public boolean req2Buf(int taskID, Object userContext, ByteArrayOutputStream reqBuffer, int[] errCode, int channelSelect) {
 
 
-        Log.d(TAG, "req2Buf taskID -> %d", taskID);
+        Log.e(TAG, "req2Buf taskID -> " + taskID);
 
         final MarsTaskWrapper taskWrapper = mapID2Task.get(taskID);
         if (taskWrapper == null) {
-            Log.e(TAG, "invalid req2Buf for task, taskID=%d", taskID);
+            Log.e(TAG, "invalid req2Buf for task, taskID=" + taskID);
             return false;
         }
 
@@ -236,7 +238,7 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
 
         final MarsTaskWrapper taskWrapper = mapID2Task.get(taskID);
         if (taskWrapper == null) {
-            Log.e(TAG, "buf2Resp: wrapper not found for stn task, taskID=%", taskID);
+            Log.e(TAG, "buf2Resp: wrapper not found for stn task, taskID=" + taskID);
             return StnLogic.RESP_FAIL_HANDLE_TASK_END;
         }
 
@@ -246,11 +248,12 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
             return StnLogic.RESP_FAIL_HANDLE_NORMAL;
 
         }catch (Throwable e) {
-            Log.e(TAG, "remote wrapper disconnected, clean this context, taskID=%d", taskID);
-            MarsTaskWrapper taskToRemove = mapID2Task.remove(taskID);
-            if (taskToRemove != null) {
-                mapTask2ID.remove(taskToRemove);
-            }
+            Log.e(TAG, "remote wrapper disconnected, clean this context, taskID=" + taskID, e);
+            //onTaskEnd to remove
+//            MarsTaskWrapper taskToRemove = mapID2Task.remove(taskID);
+//            if (taskToRemove != null) {
+//                mapTask2ID.remove(taskToRemove);
+//            }
 
         }
         return StnLogic.RESP_FAIL_HANDLE_TASK_END;
@@ -261,7 +264,7 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
     public int onTaskEnd(int taskID, Object userContext, int errType, int errCode) {
         final MarsTaskWrapper wrapper = mapID2Task.remove(taskID);
         if (wrapper == null) {
-            Log.w(TAG, "stn task onTaskEnd callback may fail, null wrapper, taskID=%d", taskID);
+            Log.e(TAG, "stn task onTaskEnd callback may fail, null wrapper, taskID=" + taskID);
             return 0; //
         }
 
@@ -281,6 +284,9 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
 
     @Override
     public void reportConnectInfo(int status, int longlinkstatus) {
+
+
+        Log.e(TAG, "reportConnectInfo: status => " + status + " longlinkstatus => " + longlinkstatus );
 
     }
 
@@ -311,6 +317,7 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
 
     @Override
     public void reportTaskProfile(String taskString) {
+        Log.e(TAG, "reportTaskProfile: taskString => " + taskString );
 
     }
 }

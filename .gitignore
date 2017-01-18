@@ -13,3 +13,9 @@ main_pb.js
 messagepush_pb.js
 
 topic_pb.js
+
+modules/core/android/src/main/libs/armeabi-v7a/
+
+*.apk
+
+*.log

@@ -1,19 +1,17 @@
 package com.github.creative.mars.tasks;
 
-import java.nio.charset.Charset;
-
 /**
  * Created by caijiacheng on 06/01/2017.
  */
 
-abstract  public class TextMarsTaskWrapper extends MarsTaskWrapper{
+abstract  public class ByteArrayTaskWrapper extends MarsTaskWrapper{
 
 
-    protected  String request;
-    protected  String response;
+    protected  byte[] request;
+    protected  byte[] response;
 
 
-    public TextMarsTaskWrapper(String request) {
+    public ByteArrayTaskWrapper(byte[] request) {
         this.request = request;
     }
 
@@ -31,11 +29,11 @@ abstract  public class TextMarsTaskWrapper extends MarsTaskWrapper{
 
     @Override
     public byte[] marshal() {
-        return request.getBytes(Charset.forName("UTF-8"));
+        return request;
     }
 
     @Override
     public void unmarshal(byte[] bytes) {
-        response = new String(bytes, Charset.forName("UTF-8"));
+        response = bytes;
     }
 }
