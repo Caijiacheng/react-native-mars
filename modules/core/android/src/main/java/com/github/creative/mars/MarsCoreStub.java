@@ -105,10 +105,7 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
             taskWrapper.onTaskEnd(StnLogic.ectLocal, ERR_INVALID_CHANNEL);
             return;
         }
-        Log.e(TAG, String.format("Task: shortLinkHostList: host => %s, cgi => %s, shortsupport => %s, longsupport => %s",
-                host, cgiPath,
-                shortSupport ? "true" : "false",
-                longSupport ? "true": "false"));
+
         // Set cmdID if necessary
         int cmdID = taskWrapper.getProperties().getInt(MarsTaskProperty.OPTIONS_CMD_ID, -1);
         if (cmdID != -1) {
@@ -117,6 +114,11 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
 
         mapID2Task.put(task.taskID, taskWrapper);
         mapTask2ID.put(taskWrapper, task.taskID);
+
+        Log.e(TAG, String.format("Task: shortLinkHostList: host => %s, cgi => %s, shortsupport => %s, longsupport => %s, cmdid => %d",
+                host, cgiPath,
+                shortSupport ? "true" : "false",
+                longSupport ? "true": "false", cmdID));
 
         // Send
         Log.e(TAG, "now start task with id " +  task.taskID);

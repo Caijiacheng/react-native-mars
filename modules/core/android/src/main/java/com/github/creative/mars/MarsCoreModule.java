@@ -1,8 +1,13 @@
 package com.github.creative.mars;
 
-import android.os.Bundle;
+import android.Manifest;
+import android.app.ActivityManager;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -23,6 +28,7 @@ import com.tencent.mars.Mars;
 import com.tencent.mars.app.AppLogic;
 import com.tencent.mars.sdt.SdtLogic;
 import com.tencent.mars.stn.StnLogic;
+import com.tencent.mars.xlog.Xlog;
 
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -109,7 +115,8 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
             return;
         }
 
-//        System.loadLibrary("stlport_shared");
+
+//        openXlog();
 
         stub = new MarsCoreStub(getReactApplicationContext());
 
@@ -180,8 +187,8 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
 
             @Override
             public void onTaskEnd(int errType, int errCode) {
-                Log.e(TAG, String.format("onEnd : data => %s, properties => %s. errType => %d, errCode => %d",
-                        data, properties.toString(), errType, errCode));
+                Log.e(TAG, String.format("onEnd :  properties => %s. errType => %d, errCode => %d",
+                        properties.toString(), errType, errCode));
                 if (errType != 0 || errCode != 0 )
                 {
                     promise.reject("-1", new Exception("Task Error: errType: " + errType + " errCode: " + errCode));
@@ -207,15 +214,15 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
         };
 
 
-        Bundle taskProp = Arguments.toBundle(properties);
-        taskWrapper.setHttpRequest(taskProp.getString(MarsTaskProperty.OPTIONS_HOST, ""),
-                taskProp.getString(MarsTaskProperty.OPTIONS_CGI_PATH, "/"));
+//        Bundle taskProp = Arguments.toBundle(properties);
+        taskWrapper.setHttpRequest(properties.getString(MarsTaskProperty.OPTIONS_HOST),
+                properties.getString(MarsTaskProperty.OPTIONS_CGI_PATH));
         taskWrapper.setLongChannelSupport(
-                taskProp.getBoolean(MarsTaskProperty.OPTIONS_CHANNEL_LONG_SUPPORT, false));
+                properties.getBoolean(MarsTaskProperty.OPTIONS_CHANNEL_LONG_SUPPORT));
         taskWrapper.setShortChannelSupport(
-                taskProp.getBoolean(MarsTaskProperty.OPTIONS_CHANNEL_SHORT_SUPPORT, true));
+                properties.getBoolean(MarsTaskProperty.OPTIONS_CHANNEL_SHORT_SUPPORT));
         taskWrapper.setCmdID(
-                taskProp.getInt(MarsTaskProperty.OPTIONS_CMD_ID, -1));
+                properties.getInt(MarsTaskProperty.OPTIONS_CMD_ID));
 
         stub.send(taskWrapper);
 
@@ -241,5 +248,49 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
         return "MarsCoreModule";
     }
 
+
+
+
+    public  void openXlog() {
+
+        System.loadLibrary("stlport_shared");
+        System.loadLibrary("marsxlog");
+
+        if (ContextCompat.checkSelfPermission(getReactApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (BuildConfig.DEBUG) {
+                Xlog.setConsoleLogOpen(true);
+            }
+            else {
+                Xlog.setConsoleLogOpen(false);
+            }
+            com.tencent.mars.xlog.Log.setLogImp(new Xlog());
+        }
+        else {
+            int pid = android.os.Process.myPid();
+            String processName = null;
+            ActivityManager am = (ActivityManager)getReactApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+            for (ActivityManager.RunningAppProcessInfo appProcess : am.getRunningAppProcesses()){
+                if(appProcess.pid == pid){
+                    processName = appProcess.processName;
+                    break;
+                }
+            }
+
+            final String SDCARD = Environment.getExternalStorageDirectory().getAbsolutePath();
+            final String logPath = SDCARD + "/RNMars/log";
+
+            String logFileName = processName.indexOf(":") == -1 ? "MarsSample" : ("MarsSample_" + processName.substring(processName.indexOf(":")+1));
+
+//            if (BuildConfig.DEBUG) {
+                Xlog.appenderOpen(Xlog.LEVEL_VERBOSE, Xlog.AppednerModeAsync, "", logPath, logFileName);
+                Xlog.setConsoleLogOpen(true);
+//            } else {
+//                Xlog.appenderOpen(Xlog.LEVEL_INFO, Xlog.AppednerModeAsync, "", logPath, logFileName);
+//                Xlog.setConsoleLogOpen(false);
+//            }
+            com.tencent.mars.xlog.Log.setLogImp(new Xlog());
+        }
+
+    }
 
 }

@@ -44,7 +44,7 @@ const post = (host, cgi, data, short_support, long_support, cmdid) => {
 
   const s_support = short_support == undefined ? true : short_support;
   const l_support = long_support == undefined ? false : long_support;
-  const c_cmdid = cmdid && -1;
+  const c_cmdid = cmdid == undefined ? -1 : cmdid;
   const properties = {
     'host' : host,
     'cgi_path': cgi,
