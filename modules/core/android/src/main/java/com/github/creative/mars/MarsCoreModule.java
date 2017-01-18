@@ -30,7 +30,6 @@ import com.tencent.mars.sdt.SdtLogic;
 import com.tencent.mars.stn.StnLogic;
 import com.tencent.mars.xlog.Xlog;
 
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,7 +79,7 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
     public void onRecvPush(int cmdid, byte[] data) {
         WritableMap json = Arguments.createMap();
         json.putInt("cmdid", cmdid);
-        json.putString("data", new String(data, Charset.forName("UTF-8")));
+        json.putArray("buffer", toReadableArray(data));
         mEventEmitter.emit(Events.EVENT_ON_PUSH.toString(), json);
     }
 
@@ -114,9 +113,6 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
         if (stub != null) {
             return;
         }
-
-
-//        openXlog();
 
         stub = new MarsCoreStub(getReactApplicationContext());
 
@@ -164,7 +160,7 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
         return bytes;
     }
 
-    static public ReadableArray toReadableArray(byte[] bytes) {
+    static public WritableArray toReadableArray(byte[] bytes) {
         WritableArray array = Arguments.createArray();
         for (int i = 0; i < bytes.length; i++) {
             array.pushInt(bytes[i]);
@@ -247,8 +243,6 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
     public String getName() {
         return "MarsCoreModule";
     }
-
-
 
 
     public  void openXlog() {

@@ -18,6 +18,7 @@ import ReactNative,
 
 
 import MainView from './MainView';
+import ChatView from './ChatView';
 
 class MarsNavigator extends Component {
 
@@ -64,7 +65,7 @@ class MarsNavigator extends Component {
                 ScreenClass = MainView;
                 break;
             default:
-                ScreenClass = VideoPlayer;
+                ScreenClass = ChatView;
                 break;
         }
         return React.createElement(ScreenClass, { navigator: navigator, route: route });

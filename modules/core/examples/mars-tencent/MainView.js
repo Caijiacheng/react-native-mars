@@ -17,8 +17,8 @@ import {
 } from 'react-native';
 
 var MarsCore = require('react-native-mars-core');
-// var MARSHOST = "marsopen.cn"
-var MARSHOST = "localhost"
+var MARSHOST = "marsopen.cn"
+// var MARSHOST = "localhost"
 
 var main_pb = require('./js/proto/main_pb')
 var chat_pb = require('./js/proto/chat_pb')
@@ -41,32 +41,30 @@ function toConvShow(conv) {
   return "[notice]:" + conv.getNotice() + '\n[topic]:' + conv.getTopic() + " [name]:" + conv.getName()
 }
 
-export default class example extends Component {
+export default class MainView extends Component {
 
   constructor(props) {
     super();
-    MarsCore.init(8080, MARSHOST, [9081], 200)
+    MarsCore.init(8080, MARSHOST, [8081], 200)
     this.state = {
       //convlist : ['STD_DISCUSS', 'STN_DISCUSS', 'OTHER_DISCUSS']
       convlist: null,
       errinfo: null,
-      username: '[RNUser:' + RndNum(5) + ']'
+      username: 'RNUser-' + RndNum(5) 
     };
     this.queryConversationList.bind(this)
-    this.sendMessage.bind(this)
+
 
   }
 
   componentWillMount() {
-    MarsCore.setOnPushListener(this.onRecvPush);
+    //MarsCore.setOnPushListener(this.onRecvPush);
     this.queryConversationList()
 
   }
 
 
-  onRecvPush(obj) {
-    console.info("onRecvPush => ", JSON.stringify(obj))
-  }
+
 
   queryConversationList() {
     let req = new main_pb.ConversationListRequest()
@@ -78,36 +76,14 @@ export default class example extends Component {
       this.setState({ convlist: response.getListList() })
     }).catch(err => {
       // console.err("err to post => ", err)
-      this.setState({ errinfo: err })
+      this.setState({ errinfo: err + ""  })
     });
   }
 
-
-  sendMessage(topic, msg) {
-    let req = new chat_pb.SendMessageRequest();
-    req.setAccessToken("rn_token");
-    req.setFrom(this.state.username)
-    req.setTo("all")
-    req.setText(msg)
-    req.setTopic(topic)
-    MarsCore.post(MARSHOST, "/mars/sendmessage", req.serializeBinary(), false, true, 3).then(
-      res => {
-        
-        let response = chat_pb.SendMessageResponse.deserializeBinary(res);
-        if (chat_pb.SendMessageResponse.Error.ERR_OK != response.getErrCode()) {
-          this.setState({ errinfo: response.getErrMsg() })
-        }else {
-          console.info("sendMessage response ok => ", response.getText())
-        }
-        
-      }
-    ).catch(err => {
-      // console.error("err to post => ", err)
-      this.setState({ errinfo: err })
-    })
-
+  navToChatView(conv)
+  {
+      this.props.navigator.push({id : 'ChatView', conv: conv, username: this.state.username, host : MARSHOST})
   }
-
 
 
   render() {
@@ -123,7 +99,8 @@ export default class example extends Component {
         return (
           <View style={styles.convlist}>
             <Touchable
-              onPress={() => { this.sendMessage(this.state.convlist[0].getTopic(), "RNMars: hello") } }
+              //onPress={() => { this.sendMessage(this.state.convlist[0].getTopic(), "RNMars: hello") } }
+              onPress={() => { this.navToChatView(this.state.convlist[0]) } }
 
               >
               <View style={buttonStyles}>
@@ -131,7 +108,8 @@ export default class example extends Component {
               </View>
             </Touchable>
             <Touchable
-              onPress={() => { this.sendMessage(this.state.convlist[1].getTopic(), "RNMars: hello 1") } }
+              //onPress={() => { this.sendMessage(this.state.convlist[1].getTopic(), "RNMars: hello 1") } }
+              onPress={() => { this.navToChatView(this.state.convlist[1]) } }
               >
               <View style={buttonStyles}>
                 <Text style={textStyles}>{toConvShow(this.state.convlist[1])}</Text>
@@ -139,7 +117,8 @@ export default class example extends Component {
             </Touchable>
 
             <Touchable
-              onPress={() => { this.sendMessage(this.state.convlist[2].getTopic(), "RNMars: hello 2") } }
+              //onPress={() => { this.sendMessage(this.state.convlist[2].getTopic(), "RNMars: hello 2") } }
+              onPress={() => { this.navToChatView(this.state.convlist[2]) } }
               >
               <View style={buttonStyles}>
                 <Text style={textStyles}>{toConvShow(this.state.convlist[2])}</Text>
@@ -233,4 +212,3 @@ const styles = StyleSheet.create({
 
 });
 
-AppRegistry.registerComponent('example', () => example);
