@@ -66,8 +66,6 @@ export default class MainView extends Component {
     };
 
     MarsCore.setOnStatListener( (state) => {
-        console.info("state ", state)
-
         if (MarsCore.constant.FLOW_CMDID == state.cmdid) {
           this.setState({flow : state.stat})
         }else if (MarsCore.constant.CONNSTATUS_CMDID == state.cmdid) {
