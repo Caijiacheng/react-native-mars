@@ -2,9 +2,9 @@
 	
 ### Mars-tencent-Samples-Demo
 
-<img src="images/1.png" alt="Main" style="width: 150px;"/>
-<img src="images/2.png" alt="Chat" style="width: 150px;"/>
-<img src="images/3.png" alt="statics" style="width: 150px;"/>
+<img src="images/1.png" alt="Main"  width="150"/>
+<img src="images/2.png" alt="Chat" width="150"/>
+<img src="images/3.png" alt="statics" width="150"/>
 
 
 ### Download Apk
