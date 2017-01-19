@@ -4,14 +4,13 @@
 
 
 
-## Get Start Mars-tencent-Samples
-`
+### Get Start Mars-tencent-Samples
+```
     git clone https://github.com/Caijiacheng/react-native-mars.git
     cd modules/core/examples/mars-tencent
     npm install 
     cd ../android && ./gradlew installRelease
-`
-
+```
 
 
 ## TODO:
