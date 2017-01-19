@@ -7,8 +7,9 @@
 <img src="images/3.png" alt="statics" width="260"/>
 
 
-### Download Apk
+### Download Demo Apk
 
+[Android-Relase-Apk-0.1](https://github.com/Caijiacheng/react-native-mars/releases/download/0.1/app-release.apk)
 
 ### Start Mars-tencent-Samples from source
 ```
