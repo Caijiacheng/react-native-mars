@@ -1,13 +1,7 @@
 package com.github.creative.mars;
 
-import android.Manifest;
-import android.app.ActivityManager;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -28,12 +22,17 @@ import com.tencent.mars.Mars;
 import com.tencent.mars.app.AppLogic;
 import com.tencent.mars.sdt.SdtLogic;
 import com.tencent.mars.stn.StnLogic;
-import com.tencent.mars.xlog.Xlog;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
+
+import static com.github.creative.mars.BaseConstants.CGIHISTORY_CMDID;
+import static com.github.creative.mars.BaseConstants.CONNSTATUS_CMDID;
+import static com.github.creative.mars.BaseConstants.FLOW_CMDID;
+import static com.github.creative.mars.BaseConstants.PUSHMSG_CMDID;
+import static com.github.creative.mars.BaseConstants.SDTRESULT_CMDID;
 
 public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCoreStub.onPushListener {
 
@@ -66,9 +65,7 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
 
             @Override
             public void onHostDestroy() {
-
                 destroy();
-
             }
         };
         getReactApplicationContext().addLifecycleEventListener(listener);
@@ -76,16 +73,27 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
     }
 
     @Override
-    public void onRecvPush(int cmdid, byte[] data) {
+    public void handleRecvMessage(int cmdid, byte[] data) {
         WritableMap json = Arguments.createMap();
         json.putInt("cmdid", cmdid);
         json.putArray("buffer", toReadableArray(data));
         mEventEmitter.emit(Events.EVENT_ON_PUSH.toString(), json);
     }
 
+    @Override
+    public void handleRecvStatistic(int cmdid, String info) {
+        if (mEnableStat) {
+            WritableMap json = Arguments.createMap();
+            json.putInt("cmdid", cmdid);
+            json.putString("stat", info);
+            mEventEmitter.emit(Events.EVENT_ON_STAT.toString(), json);
+        }
+    }
+
 
     public enum Events {
-        EVENT_ON_PUSH("onMarsPush");
+        EVENT_ON_PUSH("onMarsPush"),
+        EVENT_ON_STAT("onMarsStat");
 
         private final String mName;
 
@@ -99,13 +107,17 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
         }
     }
 
+
     @Nullable
     @Override
     public Map<String, Object> getConstants() {
-
         final Map<String, Object> constants = new HashMap<>();
-
-        return super.getConstants();
+        constants.put("PUSHMSG_CMDID", PUSHMSG_CMDID);
+        constants.put("FLOW_CMDID", FLOW_CMDID);
+        constants.put("CGIHISTORY_CMDID", CGIHISTORY_CMDID);
+        constants.put("CONNSTATUS_CMDID", CONNSTATUS_CMDID);
+        constants.put("SDTRESULT_CMDID", SDTRESULT_CMDID);
+        return constants;
     }
 
     @ReactMethod
@@ -137,8 +149,12 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
         StnLogic.makesureLongLinkConnected();
         stub.setOnPushListener(this);
 
-        Log.e(TAG, "MarsCoreModule init ok. longHost => " + profile.getString("longLinkHost"));
-        Log.e(TAG, "shortLinkPort " + profile.getInt("shortLinkPort") + " longLinkPort: " + ports[0]);
+        if (BuildConfig.DEBUG)
+        {
+            Log.e(TAG, "MarsCoreModule init ok. longHost => " + profile.getString("longLinkHost"));
+            Log.e(TAG, "shortLinkPort " + profile.getInt("shortLinkPort") + " longLinkPort: " + ports[0]);
+        }
+
     }
 
 
@@ -148,6 +164,13 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
             BaseEvent.onNetworkChange();
         }
     }
+
+    private boolean mEnableStat = false;
+    @ReactMethod
+    public void setStatisticEnable(boolean enable) {
+        mEnableStat = enable;
+    }
+
 
 
     static public byte[] toByteArray(ReadableArray data) {
@@ -175,15 +198,11 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
 
 
         ByteArrayTaskWrapper taskWrapper = new ByteArrayTaskWrapper(toByteArray(data)) {
-            @Override
-            public void onTaskSend() {
-                Log.e(TAG, String.format("onSend : data => %s, properties => %s",
-                        MemoryDump.dumpHex(toByteArray(data)), properties.toString()));
-            }
 
             @Override
             public void onTaskEnd(int errType, int errCode) {
-                Log.e(TAG, String.format("onEnd :  properties => %s. errType => %d, errCode => %d",
+                if (BuildConfig.DEBUG)
+                    Log.e(TAG, String.format("onEnd :  properties => %s. errType => %d, errCode => %d",
                         properties.toString(), errType, errCode));
                 if (errType != 0 || errCode != 0 )
                 {
@@ -193,7 +212,8 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
 
             @Override
             public void onTaskCancel() {
-                Log.e(TAG, String.format("onTaskCancel : data => %s, properties => %s",
+                if (BuildConfig.DEBUG)
+                    Log.e(TAG, String.format("onTaskCancel : data => %s, properties => %s",
                         MemoryDump.dumpHex(toByteArray(data)),
                         properties.toString()));
                 promise.reject("-1", new Exception("taskCancel"));
@@ -201,16 +221,15 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
 
             @Override
             public void onTaskResponse() {
-
+                if (BuildConfig.DEBUG)
+                    Log.e(TAG, String.format("onTaskResponse : data => %s, properties => %s, response => %s", MemoryDump.dumpHex(toByteArray(data)), properties.toString(),
+                            MemoryDump.dumpHex(response)));
                 byte[] response = (byte[]) getResponse();
-                Log.e(TAG, String.format("onTaskResponse : data => %s, properties => %s, response => %s", MemoryDump.dumpHex(toByteArray(data)), properties.toString(),
-                        MemoryDump.dumpHex(response)));
                 promise.resolve(toReadableArray(response));
             }
         };
 
 
-//        Bundle taskProp = Arguments.toBundle(properties);
         taskWrapper.setHttpRequest(properties.getString(MarsTaskProperty.OPTIONS_HOST),
                 properties.getString(MarsTaskProperty.OPTIONS_CGI_PATH));
         taskWrapper.setLongChannelSupport(
@@ -245,46 +264,5 @@ public class MarsCoreModule extends ReactContextBaseJavaModule implements MarsCo
     }
 
 
-    public  void openXlog() {
-
-        System.loadLibrary("stlport_shared");
-        System.loadLibrary("marsxlog");
-
-        if (ContextCompat.checkSelfPermission(getReactApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (BuildConfig.DEBUG) {
-                Xlog.setConsoleLogOpen(true);
-            }
-            else {
-                Xlog.setConsoleLogOpen(false);
-            }
-            com.tencent.mars.xlog.Log.setLogImp(new Xlog());
-        }
-        else {
-            int pid = android.os.Process.myPid();
-            String processName = null;
-            ActivityManager am = (ActivityManager)getReactApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-            for (ActivityManager.RunningAppProcessInfo appProcess : am.getRunningAppProcesses()){
-                if(appProcess.pid == pid){
-                    processName = appProcess.processName;
-                    break;
-                }
-            }
-
-            final String SDCARD = Environment.getExternalStorageDirectory().getAbsolutePath();
-            final String logPath = SDCARD + "/RNMars/log";
-
-            String logFileName = processName.indexOf(":") == -1 ? "MarsSample" : ("MarsSample_" + processName.substring(processName.indexOf(":")+1));
-
-//            if (BuildConfig.DEBUG) {
-                Xlog.appenderOpen(Xlog.LEVEL_VERBOSE, Xlog.AppednerModeAsync, "", logPath, logFileName);
-                Xlog.setConsoleLogOpen(true);
-//            } else {
-//                Xlog.appenderOpen(Xlog.LEVEL_INFO, Xlog.AppednerModeAsync, "", logPath, logFileName);
-//                Xlog.setConsoleLogOpen(false);
-//            }
-            com.tencent.mars.xlog.Log.setLogImp(new Xlog());
-        }
-
-    }
 
 }

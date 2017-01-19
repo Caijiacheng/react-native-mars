@@ -14,15 +14,13 @@ import { GiftedChat } from 'react-native-gifted-chat';
 
 
 var MarsCore = require('react-native-mars-core');
-// var MARSHOST = "marsopen.cn"
-// var MARSHOST = "localhost"
 
 var main_pb = require('./js/proto/main_pb')
 var chat_pb = require('./js/proto/chat_pb')
 var topic_pb = require('./js/proto/topic_pb')
 var messagepush_pb = require('./js/proto/messagepush_pb')
 
-const PUSH_CMD_ID = 10001
+// const PUSH_CMD_ID = 10001
 let uid = 3;
 let mid = 3;
 export default class ChatView extends React.Component {
@@ -51,12 +49,11 @@ export default class ChatView extends React.Component {
     componentDidMount()
     {
         MarsCore.setOnPushListener((data) => {
-            //console.info("onPush data : ", data)
-            if (data.cmdid == PUSH_CMD_ID) {
+            if (data.cmdid == MarsCore.constant.PUSHMSG_CMDID) {
                 let mpush = messagepush_pb.MessagePush.deserializeBinary(data.buffer);
                 if (mpush.getTopic() === this.state.conv.getTopic())
                 {
-                    console.info("add => messagePush: " + mpush.getContent() + " from: " + mpush.getFrom())
+                    // console.info("add => messagePush: " + mpush.getContent() + " from: " + mpush.getFrom())
 
                     this.setState((previousState) => {
                         return {
@@ -88,7 +85,6 @@ export default class ChatView extends React.Component {
 
     onSend(messages = []) {
 
-        console.info("messages => ", messages)
         let req = new chat_pb.SendMessageRequest();
         req.setAccessToken("rn_token");
         req.setFrom(this.state.username)
@@ -109,7 +105,7 @@ export default class ChatView extends React.Component {
                     });
 
                 } else {
-                    console.info("sendMessage response ok => ", response.getText())
+                    // console.info("sendMessage response ok => ", response.getText())
                     this.setState((previousState) => {
                         return {
                             messages: GiftedChat.append(previousState.messages, messages),

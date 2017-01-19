@@ -23,9 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, SdtLogic.ICallBack {
 
 
-
-    public final  static int ERR_INVALID_CHANNEL = -1001;
-    public final  static int ERR_START_TASK_FAILED = -1002;
+    public final static int ERR_INVALID_CHANNEL = -1001;
 
     private static final String TAG = MarsCoreStub.class.getName();
 
@@ -34,7 +32,6 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
     MarsCoreStub(Context ctx) {
         this.context = ctx;
     }
-
 
     public static final String DEVICE_NAME = android.os.Build.MANUFACTURER + "-" + android.os.Build.MODEL;
     public static final String DEVICE_TYPE = "android-" + android.os.Build.VERSION.SDK_INT;
@@ -46,8 +43,10 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
     private Map<Integer, MarsTaskWrapper> mapID2Task = new ConcurrentHashMap<>();
     private Map<MarsTaskWrapper, Integer> mapTask2ID = new ConcurrentHashMap<>();
 
-    public interface  onPushListener {
-        void onRecvPush(int cmdid, byte[] data);
+    public interface onPushListener {
+        void handleRecvMessage(int cmdid, byte[] data);
+
+        void handleRecvStatistic(int cmdid, String info);
     }
 
     private onPushListener onPushHandle = null;
@@ -73,9 +72,6 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
         this.appFilePath = appFilePath;
     }
 
-
-
-
     public void send(MarsTaskWrapper taskWrapper) {
         final StnLogic.Task task = new StnLogic.Task(StnLogic.Task.EShort, 0, "", null);
 
@@ -84,7 +80,6 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
         final String cgiPath = taskWrapper.getProperties().getString(MarsTaskProperty.OPTIONS_CGI_PATH);
         task.shortLinkHostList = new ArrayList<>();
         task.shortLinkHostList.add(host);
-
 
 
         task.cgi = cgiPath;
@@ -115,23 +110,30 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
         mapID2Task.put(task.taskID, taskWrapper);
         mapTask2ID.put(taskWrapper, task.taskID);
 
-        Log.e(TAG, String.format("Task: shortLinkHostList: host => %s, cgi => %s, shortsupport => %s, longsupport => %s, cmdid => %d",
-                host, cgiPath,
-                shortSupport ? "true" : "false",
-                longSupport ? "true": "false", cmdID));
 
-        // Send
-        Log.e(TAG, "now start task with id " +  task.taskID);
+        if (BuildConfig.DEBUG)
+        {
+            Log.i(TAG, String.format("Task: shortLinkHostList: host => %s, cgi => %s, shortsupport => %s, longsupport => %s, cmdid => %d",
+                    host, cgiPath,
+                    shortSupport ? "true" : "false",
+                    longSupport ? "true" : "false", cmdID));
+
+            Log.i(TAG, "now start task with id " + task.taskID);
+        }
+
         StnLogic.startTask(task);
         if (!StnLogic.hasTask(task.taskID)) {
-            //Log.e(TAG, "stn task started with id " + task.taskID);
-            Log.e(TAG, "stn task start failed with id " + task.taskID);
+            if (BuildConfig.DEBUG)
+            {
+                Log.i(TAG, "stn task start failed with id " + task.taskID);
+            }
+
         }
 
     }
 
 
-    public void cancel(MarsTaskWrapper taskWrapper)  {
+    public void cancel(MarsTaskWrapper taskWrapper) {
         if (taskWrapper == null) {
             Log.e(TAG, "cannot cancel null wrapper");
             return;
@@ -185,7 +187,9 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
 
     @Override
     public void reportSignalDetectResults(String resultsJson) {
-        Log.e(TAG, "reportSignalDetectResults: resultsJson => " + resultsJson );
+        if (onPushHandle != null) {
+            onPushHandle.handleRecvStatistic(BaseConstants.SDTRESULT_CMDID, resultsJson);
+        }
     }
 
     @Override
@@ -201,11 +205,11 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
     @Override
     public void onPush(int cmdid, byte[] data) {
 
-        Log.e(TAG, String.format("onPush => %d, data => %s", cmdid, MemoryDump.dumpHex(data)));
+//        Log.e(TAG, String.format("onPush => %d, data => %s", cmdid, MemoryDump.dumpHex(data)));
         if (onPushHandle != null) {
             try {
-                onPushHandle.onRecvPush(cmdid, data);
-            }catch (Throwable e) {
+                onPushHandle.handleRecvMessage(cmdid, data);
+            } catch (Throwable e) {
                 e.printStackTrace();//skip
             }
 
@@ -216,7 +220,8 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
     public boolean req2Buf(int taskID, Object userContext, ByteArrayOutputStream reqBuffer, int[] errCode, int channelSelect) {
 
 
-        Log.e(TAG, "req2Buf taskID -> " + taskID);
+        if (BuildConfig.DEBUG)
+            Log.i(TAG, "req2Buf taskID -> " + taskID);
 
         final MarsTaskWrapper taskWrapper = mapID2Task.get(taskID);
         if (taskWrapper == null) {
@@ -226,9 +231,8 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
 
         try {
             reqBuffer.write(taskWrapper.marshal());
-            taskWrapper.onTaskSend();
             return true;
-        }catch (Throwable e) {
+        } catch (Throwable e) {
             Log.e(TAG, "task wrapper req2buf failed for short, check your encode process");
         }
 
@@ -249,7 +253,7 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
             taskWrapper.onTaskResponse();
             return StnLogic.RESP_FAIL_HANDLE_NORMAL;
 
-        }catch (Throwable e) {
+        } catch (Throwable e) {
             Log.e(TAG, "remote wrapper disconnected, clean this context, taskID=" + taskID, e);
             //onTaskEnd to remove
 //            MarsTaskWrapper taskToRemove = mapID2Task.remove(taskID);
@@ -281,14 +285,24 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
 
     @Override
     public void reportFlow(int wifiRecv, int wifiSend, int mobileRecv, int mobileSend) {
+        if (onPushHandle != null) {
+            onPushHandle.handleRecvStatistic(BaseConstants.FLOW_CMDID,
+                    String.format("wifiRecv: %d, wifiSend:%d, mobileRecv:%d, mobileSend:%d",
+                    wifiRecv, wifiSend, mobileRecv, mobileSend));
+
+        }
 
     }
 
     @Override
     public void reportConnectInfo(int status, int longlinkstatus) {
+        if (BuildConfig.DEBUG)
+            Log.i(TAG, "reportConnectInfo: status => " + status + " longlinkstatus => " + longlinkstatus);
 
-
-        Log.e(TAG, "reportConnectInfo: status => " + status + " longlinkstatus => " + longlinkstatus );
+        if (onPushHandle != null) {
+            onPushHandle.handleRecvStatistic(BaseConstants.CONNSTATUS_CMDID,
+                    String.format("status: %d, longlinkstatus: %d", status, longlinkstatus));
+        }
 
     }
 
@@ -319,7 +333,10 @@ public class MarsCoreStub implements StnLogic.ICallBack, AppLogic.ICallBack, Sdt
 
     @Override
     public void reportTaskProfile(String taskString) {
-        Log.e(TAG, "reportTaskProfile: taskString => " + taskString );
+        if (onPushHandle != null) {
+            onPushHandle.handleRecvStatistic(BaseConstants.CGIHISTORY_CMDID,
+                    taskString);
+        }
 
     }
 }
