@@ -1,5 +1,15 @@
 # react-native-mars
 	
+### Description
+
+***React-native-mars*** is to add support mars features for ReactNative
+
+[Mars](https://github.com/Tencent/mars):  a cross-platform infrastructure component developed by WeChat Mobile Team. It is proved to be effective by billions of WeChat users.
+	
+[ReactNative](http://facebook.github.io/react-native/): Build Native Mobile Apps using JavaScript and React
+
+
+	
 ### Mars-tencent-Samples-Demo
 
 <img src="images/1.png" alt="Main"  width="260"/>
