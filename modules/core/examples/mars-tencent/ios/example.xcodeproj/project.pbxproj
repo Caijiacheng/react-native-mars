@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		000B920D1E30BA4700E278CA /* log_crypt.cc in Sources */ = {isa = PBXBuildFile; fileRef = 000B920A1E30BA4700E278CA /* log_crypt.cc */; };
 		000B92761E30D10A00E278CA /* mars.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 000B920C1E30BA4700E278CA /* mars.framework */; };
+		0046E8E11E52D6F800AB2CD1 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0046E8E01E52D6F800AB2CD1 /* CoreTelephony.framework */; };
+		0046E8FD1E52D75900AB2CD1 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0046E8FC1E52D75900AB2CD1 /* libz.tbd */; };
+		0046E8FF1E52D77800AB2CD1 /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0046E8FE1E52D77800AB2CD1 /* libresolv.tbd */; };
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
 		00C302E81ABCBA2D00DB3ED1 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302C01ABCB91800DB3ED1 /* libRCTImage.a */; };
@@ -225,6 +228,9 @@
 		000B920A1E30BA4700E278CA /* log_crypt.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = log_crypt.cc; sourceTree = "<group>"; };
 		000B920B1E30BA4700E278CA /* log_crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log_crypt.h; sourceTree = "<group>"; };
 		000B920C1E30BA4700E278CA /* mars.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = mars.framework; sourceTree = "<group>"; };
+		0046E8E01E52D6F800AB2CD1 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		0046E8FC1E52D75900AB2CD1 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		0046E8FE1E52D77800AB2CD1 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTActionSheet.xcodeproj; path = "../node_modules/react-native/Libraries/ActionSheetIOS/RCTActionSheet.xcodeproj"; sourceTree = "<group>"; };
 		00C302B51ABCB90400DB3ED1 /* RCTGeolocation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTGeolocation.xcodeproj; path = "../node_modules/react-native/Libraries/Geolocation/RCTGeolocation.xcodeproj"; sourceTree = "<group>"; };
@@ -264,6 +270,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0046E8FF1E52D77800AB2CD1 /* libresolv.tbd in Frameworks */,
+				0046E8FD1E52D75900AB2CD1 /* libz.tbd in Frameworks */,
+				0046E8E11E52D6F800AB2CD1 /* CoreTelephony.framework in Frameworks */,
 				000B92761E30D10A00E278CA /* mars.framework in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
@@ -299,6 +308,16 @@
 				000B92B01E30D73F00E278CA /* libMarsForRN.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		0046E8DF1E52D6F800AB2CD1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0046E8FE1E52D77800AB2CD1 /* libresolv.tbd */,
+				0046E8FC1E52D75900AB2CD1 /* libz.tbd */,
+				0046E8E01E52D6F800AB2CD1 /* CoreTelephony.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		00C302A81ABCB8CE00DB3ED1 /* Products */ = {
@@ -461,6 +480,7 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* exampleTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
+				0046E8DF1E52D6F800AB2CD1 /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";

@@ -8,7 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		000B92471E30BCDF00E278CA /* MarsForRN.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000B92461E30BCDF00E278CA /* MarsForRN.mm */; };
-		23240BE91E31BAEB00669F70 /* RCTMarsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 23240BE81E31BAEB00669F70 /* RCTMarsModule.m */; };
+		0046E8D61E52B4A900AB2CD1 /* CGITask.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0046E8C31E52B4A900AB2CD1 /* CGITask.mm */; };
+		0046E8D71E52B4A900AB2CD1 /* NetworkService.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0046E8C61E52B4A900AB2CD1 /* NetworkService.mm */; };
+		0046E8D81E52B4A900AB2CD1 /* NetworkStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 0046E8C81E52B4A900AB2CD1 /* NetworkStatus.m */; };
+		0046E8D91E52B4A900AB2CD1 /* app_callback.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0046E8CC1E52B4A900AB2CD1 /* app_callback.mm */; };
+		0046E8DA1E52B4A900AB2CD1 /* log_crypt.cc in Sources */ = {isa = PBXBuildFile; fileRef = 0046E8CD1E52B4A900AB2CD1 /* log_crypt.cc */; };
+		0046E8DB1E52B4A900AB2CD1 /* longlink_packer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 0046E8CF1E52B4A900AB2CD1 /* longlink_packer.cc */; };
+		0046E8DC1E52B4A900AB2CD1 /* shortlink_packer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 0046E8D11E52B4A900AB2CD1 /* shortlink_packer.cc */; };
+		0046E8DD1E52B4A900AB2CD1 /* stn_callback.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0046E8D41E52B4A900AB2CD1 /* stn_callback.mm */; };
+		23240BE91E31BAEB00669F70 /* RCTMarsModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 23240BE81E31BAEB00669F70 /* RCTMarsModule.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,10 +35,28 @@
 		000B92411E30BCDF00E278CA /* libMarsForRN.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMarsForRN.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		000B92441E30BCDF00E278CA /* MarsForRN.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MarsForRN.h; sourceTree = "<group>"; };
 		000B92461E30BCDF00E278CA /* MarsForRN.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MarsForRN.mm; sourceTree = "<group>"; };
+		0046E8C21E52B4A900AB2CD1 /* CGITask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGITask.h; sourceTree = "<group>"; };
+		0046E8C31E52B4A900AB2CD1 /* CGITask.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CGITask.mm; sourceTree = "<group>"; };
+		0046E8C41E52B4A900AB2CD1 /* NetworkDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkDelegate.h; sourceTree = "<group>"; };
+		0046E8C51E52B4A900AB2CD1 /* NetworkService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkService.h; sourceTree = "<group>"; };
+		0046E8C61E52B4A900AB2CD1 /* NetworkService.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NetworkService.mm; sourceTree = "<group>"; };
+		0046E8C71E52B4A900AB2CD1 /* NetworkStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkStatus.h; sourceTree = "<group>"; };
+		0046E8C81E52B4A900AB2CD1 /* NetworkStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkStatus.m; sourceTree = "<group>"; };
+		0046E8C91E52B4A900AB2CD1 /* UINotifyDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UINotifyDelegate.h; sourceTree = "<group>"; };
+		0046E8CB1E52B4A900AB2CD1 /* app_callback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = app_callback.h; sourceTree = "<group>"; };
+		0046E8CC1E52B4A900AB2CD1 /* app_callback.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = app_callback.mm; sourceTree = "<group>"; };
+		0046E8CD1E52B4A900AB2CD1 /* log_crypt.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = log_crypt.cc; sourceTree = "<group>"; };
+		0046E8CE1E52B4A900AB2CD1 /* log_crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log_crypt.h; sourceTree = "<group>"; };
+		0046E8CF1E52B4A900AB2CD1 /* longlink_packer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = longlink_packer.cc; sourceTree = "<group>"; };
+		0046E8D01E52B4A900AB2CD1 /* longlink_packer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = longlink_packer.h; sourceTree = "<group>"; };
+		0046E8D11E52B4A900AB2CD1 /* shortlink_packer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shortlink_packer.cc; sourceTree = "<group>"; };
+		0046E8D21E52B4A900AB2CD1 /* shortlink_packer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shortlink_packer.h; sourceTree = "<group>"; };
+		0046E8D31E52B4A900AB2CD1 /* stn_callback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stn_callback.h; sourceTree = "<group>"; };
+		0046E8D41E52B4A900AB2CD1 /* stn_callback.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = stn_callback.mm; sourceTree = "<group>"; };
+		0046E8D51E52B4A900AB2CD1 /* stnproto_logic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stnproto_logic.h; sourceTree = "<group>"; };
+		0046E8DE1E52D28900AB2CD1 /* PushNotifyDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PushNotifyDelegate.h; sourceTree = "<group>"; };
 		23240BE71E31BAEB00669F70 /* RCTMarsModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTMarsModule.h; sourceTree = "<group>"; };
-		23240BE81E31BAEB00669F70 /* RCTMarsModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTMarsModule.m; sourceTree = "<group>"; };
-		23240BEA1E31FB8700669F70 /* PublicComponentV2 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = PublicComponentV2; sourceTree = "<group>"; };
-		23240BEB1E320E8000669F70 /* Bussiness */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Bussiness; sourceTree = "<group>"; };
+		23240BE81E31BAEB00669F70 /* RCTMarsModule.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTMarsModule.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,14 +89,48 @@
 		000B92431E30BCDF00E278CA /* MarsForRN */ = {
 			isa = PBXGroup;
 			children = (
-				23240BEB1E320E8000669F70 /* Bussiness */,
-				23240BEA1E31FB8700669F70 /* PublicComponentV2 */,
+				0046E8C11E52B4A900AB2CD1 /* Bussiness */,
+				0046E8CA1E52B4A900AB2CD1 /* PublicComponentV2 */,
 				23240BE71E31BAEB00669F70 /* RCTMarsModule.h */,
-				23240BE81E31BAEB00669F70 /* RCTMarsModule.m */,
+				23240BE81E31BAEB00669F70 /* RCTMarsModule.mm */,
 				000B92441E30BCDF00E278CA /* MarsForRN.h */,
 				000B92461E30BCDF00E278CA /* MarsForRN.mm */,
 			);
 			path = MarsForRN;
+			sourceTree = "<group>";
+		};
+		0046E8C11E52B4A900AB2CD1 /* Bussiness */ = {
+			isa = PBXGroup;
+			children = (
+				0046E8C21E52B4A900AB2CD1 /* CGITask.h */,
+				0046E8C31E52B4A900AB2CD1 /* CGITask.mm */,
+				0046E8C41E52B4A900AB2CD1 /* NetworkDelegate.h */,
+				0046E8C51E52B4A900AB2CD1 /* NetworkService.h */,
+				0046E8C61E52B4A900AB2CD1 /* NetworkService.mm */,
+				0046E8C71E52B4A900AB2CD1 /* NetworkStatus.h */,
+				0046E8C81E52B4A900AB2CD1 /* NetworkStatus.m */,
+				0046E8DE1E52D28900AB2CD1 /* PushNotifyDelegate.h */,
+				0046E8C91E52B4A900AB2CD1 /* UINotifyDelegate.h */,
+			);
+			path = Bussiness;
+			sourceTree = "<group>";
+		};
+		0046E8CA1E52B4A900AB2CD1 /* PublicComponentV2 */ = {
+			isa = PBXGroup;
+			children = (
+				0046E8CB1E52B4A900AB2CD1 /* app_callback.h */,
+				0046E8CC1E52B4A900AB2CD1 /* app_callback.mm */,
+				0046E8CD1E52B4A900AB2CD1 /* log_crypt.cc */,
+				0046E8CE1E52B4A900AB2CD1 /* log_crypt.h */,
+				0046E8CF1E52B4A900AB2CD1 /* longlink_packer.cc */,
+				0046E8D01E52B4A900AB2CD1 /* longlink_packer.h */,
+				0046E8D11E52B4A900AB2CD1 /* shortlink_packer.cc */,
+				0046E8D21E52B4A900AB2CD1 /* shortlink_packer.h */,
+				0046E8D31E52B4A900AB2CD1 /* stn_callback.h */,
+				0046E8D41E52B4A900AB2CD1 /* stn_callback.mm */,
+				0046E8D51E52B4A900AB2CD1 /* stnproto_logic.h */,
+			);
+			path = PublicComponentV2;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -130,7 +190,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				23240BE91E31BAEB00669F70 /* RCTMarsModule.m in Sources */,
+				0046E8D81E52B4A900AB2CD1 /* NetworkStatus.m in Sources */,
+				0046E8DB1E52B4A900AB2CD1 /* longlink_packer.cc in Sources */,
+				0046E8D71E52B4A900AB2CD1 /* NetworkService.mm in Sources */,
+				23240BE91E31BAEB00669F70 /* RCTMarsModule.mm in Sources */,
+				0046E8DA1E52B4A900AB2CD1 /* log_crypt.cc in Sources */,
+				0046E8D61E52B4A900AB2CD1 /* CGITask.mm in Sources */,
+				0046E8D91E52B4A900AB2CD1 /* app_callback.mm in Sources */,
+				0046E8DC1E52B4A900AB2CD1 /* shortlink_packer.cc in Sources */,
+				0046E8DD1E52B4A900AB2CD1 /* stn_callback.mm in Sources */,
 				000B92471E30BCDF00E278CA /* MarsForRN.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
