@@ -22,6 +22,10 @@
 [Android-Relase-Apk-0.1](https://github.com/Caijiacheng/react-native-mars/releases/download/0.1/app-release.apk)
 
 ### Start Mars-tencent-Samples from source
+
+1. [Protocol Compiler Installation](https://github.com/google/protobuf)
+2. Install from source
+
 ```
     git clone https://github.com/Caijiacheng/react-native-mars.git
     cd modules/core/examples/mars-tencent
