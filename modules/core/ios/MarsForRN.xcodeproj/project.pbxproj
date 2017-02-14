@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		000B92471E30BCDF00E278CA /* MarsForRN.mm in Sources */ = {isa = PBXBuildFile; fileRef = 000B92461E30BCDF00E278CA /* MarsForRN.mm */; };
+		23240BE91E31BAEB00669F70 /* RCTMarsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 23240BE81E31BAEB00669F70 /* RCTMarsModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +27,10 @@
 		000B92411E30BCDF00E278CA /* libMarsForRN.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMarsForRN.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		000B92441E30BCDF00E278CA /* MarsForRN.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MarsForRN.h; sourceTree = "<group>"; };
 		000B92461E30BCDF00E278CA /* MarsForRN.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MarsForRN.mm; sourceTree = "<group>"; };
+		23240BE71E31BAEB00669F70 /* RCTMarsModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTMarsModule.h; sourceTree = "<group>"; };
+		23240BE81E31BAEB00669F70 /* RCTMarsModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTMarsModule.m; sourceTree = "<group>"; };
+		23240BEA1E31FB8700669F70 /* PublicComponentV2 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = PublicComponentV2; sourceTree = "<group>"; };
+		23240BEB1E320E8000669F70 /* Bussiness */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Bussiness; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +63,10 @@
 		000B92431E30BCDF00E278CA /* MarsForRN */ = {
 			isa = PBXGroup;
 			children = (
+				23240BEB1E320E8000669F70 /* Bussiness */,
+				23240BEA1E31FB8700669F70 /* PublicComponentV2 */,
+				23240BE71E31BAEB00669F70 /* RCTMarsModule.h */,
+				23240BE81E31BAEB00669F70 /* RCTMarsModule.m */,
 				000B92441E30BCDF00E278CA /* MarsForRN.h */,
 				000B92461E30BCDF00E278CA /* MarsForRN.mm */,
 			);
@@ -121,6 +130,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				23240BE91E31BAEB00669F70 /* RCTMarsModule.m in Sources */,
 				000B92471E30BCDF00E278CA /* MarsForRN.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
